@@ -1,0 +1,77 @@
+﻿<Window x:Class="ShortcutEditorWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ShortcutEditorWPF"
+        xmlns:base="clr-namespace:ShortcutEditorWPF.ViewModels.Base"
+        xmlns:viewModels="clr-namespace:ShortcutEditorWPF.ViewModels"
+        mc:Ignorable="d"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="Manual"
+        WindowState="Normal"
+        Title="{Binding Title}"
+        Width="800" Height="480" >
+    <Window.DataContext>
+        <viewModels:MainWindowViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.2*"/>
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="0.01*"/>
+            <RowDefinition Height="0.8*" />
+            <RowDefinition Height="0.25*"/>
+            <RowDefinition Height="0.02*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition  Width="0.07*"/>
+            <ColumnDefinition  Width="2.0*"/>
+            <ColumnDefinition  Width="2.0*"/>
+            <ColumnDefinition  Width="0.1*"/>
+        </Grid.ColumnDefinitions>
+        <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Height="25" VerticalAlignment="Center" Padding="3">
+            <MenuItem Header="File">
+                <MenuItem Header="Open directory" Command="{Binding OpenDirectoryCommand}"></MenuItem>
+                <MenuItem Header="Open LVT" ></MenuItem>
+                <MenuItem Header="Match files" ></MenuItem>
+                <MenuItem Header="Save TXT" ></MenuItem>
+                <MenuItem Header="Save TXT as" ></MenuItem>
+                <MenuItem Header="Show dictionary" ></MenuItem>
+                <MenuItem Header="Close all" ></MenuItem>
+                <Separator />
+                <MenuItem Header="Exit" Command="{Binding CloseApplicationCommand}"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem Header="Copy" ></MenuItem>
+                <MenuItem Header="Cut" ></MenuItem>
+                <MenuItem Header="Paste" ></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Help" >
+                <MenuItem Header="About" ></MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <DockPanel Grid.Column="1" Grid.Row="1" LastChildFill="True" Margin="0 0 2 0">
+            <TextBlock DockPanel.Dock="Top" Text="Txt file path: none"
+                       Width="auto" Height="30" VerticalAlignment="Top"
+                       HorizontalAlignment="Left" Foreground="Gray" 
+                       Padding="5" Name="tBlockTxtFilePath"/>
+            <WrapPanel DockPanel.Dock="Bottom" 
+                      Height="24" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                
+                
+            </WrapPanel>
+            <GroupBox DockPanel.Dock="Top" Width="auto" Height="auto" Header="File list">
+                <ListBox ItemsSource="{Binding Files}" DisplayMemberPath="ShortName"></ListBox>
+            </GroupBox>
+        </DockPanel>
+        <DockPanel Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" LastChildFill="True" Margin="0 0 2 0" Height="26" VerticalAlignment="Center">
+            <StatusBar DockPanel.Dock="Top">
+                <StatusBarItem MinWidth="150" MaxWidth="750" Height="auto" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding CurrentDirectoryDescription, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Left" Height="30"></TextBlock>
+                </StatusBarItem>
+            </StatusBar>
+        </DockPanel>
+    </Grid>
+</Window>
