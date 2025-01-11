@@ -16,7 +16,17 @@ namespace ShortcutEditorWPF.ViewModels
 	{
 		private string _title = "ShortcutEditor";
 		private string _currentDirectory;
-		public List<File> Files { get; private set; }
+		private ObservableCollection<File>? _fileList;
+		public ObservableCollection<File>? Files 
+		{
+			get => _fileList ?? null;
+			set
+			{
+				_fileList = value;
+				OnPropertyChanged();
+			}
+		}
+		
 
 		public string CurrentDirectoryDescription => String.Format("Current directory: " + _currentDirectory);
 		public string Title
@@ -39,6 +49,7 @@ namespace ShortcutEditorWPF.ViewModels
 		#region OpenDirectoryCommand
 		public ICommand OpenDirectoryCommand { get; }
 		private bool CanOpenDirectoryCommandExecute(object p) => true;
+
 		private void OnOpenDirectoryExecuted(object p)
 		{
 			var ofd = new CommonOpenFileDialog("Выберите папку")
@@ -49,7 +60,7 @@ namespace ShortcutEditorWPF.ViewModels
 			};
 			if (ofd.ShowDialog() != CommonFileDialogResult.Ok) return;
 			_currentDirectory = Path.GetFullPath(ofd.FileName);
-			Files = SearchFiles(_currentDirectory, ArrayOfMasks);
+			Files = SearchFiles(_currentDirectory, new string [] {".lnk"});
 		}
 		#endregion
 		#endregion
@@ -93,7 +104,7 @@ namespace ShortcutEditorWPF.ViewModels
 							FullName = Path.GetFullPath(f)
 						});
 			
-				var result = new ObservableCollection<FileModel>(files);
+				var result = new ObservableCollection<File>(files);
 				return result;
 			}
 			catch (UnauthorizedAccessException uAEx)

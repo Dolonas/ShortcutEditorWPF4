@@ -33,19 +33,8 @@
         <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Height="25" VerticalAlignment="Center" Padding="3">
             <MenuItem Header="File">
                 <MenuItem Header="Open directory" Command="{Binding OpenDirectoryCommand}"></MenuItem>
-                <MenuItem Header="Open LVT" ></MenuItem>
-                <MenuItem Header="Match files" ></MenuItem>
-                <MenuItem Header="Save TXT" ></MenuItem>
-                <MenuItem Header="Save TXT as" ></MenuItem>
-                <MenuItem Header="Show dictionary" ></MenuItem>
-                <MenuItem Header="Close all" ></MenuItem>
                 <Separator />
                 <MenuItem Header="Exit" Command="{Binding CloseApplicationCommand}"></MenuItem>
-            </MenuItem>
-            <MenuItem Header="Edit">
-                <MenuItem Header="Copy" ></MenuItem>
-                <MenuItem Header="Cut" ></MenuItem>
-                <MenuItem Header="Paste" ></MenuItem>
             </MenuItem>
             <MenuItem Header="Help" >
                 <MenuItem Header="About" ></MenuItem>
