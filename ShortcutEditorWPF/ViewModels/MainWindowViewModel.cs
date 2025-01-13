@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using ShellLink;
 using ShortcutEditorWPF.Infrastructure.Commands;
 using ShortcutEditorWPF.ViewModels.Base.Base;
 using File = ShortcutEditorWPF.Models.File;
@@ -17,12 +17,33 @@ namespace ShortcutEditorWPF.ViewModels
 		private string _title = "ShortcutEditor";
 		private string _currentDirectory;
 		private ObservableCollection<File>? _fileList;
+		private File? _selectedFile;
+		private string _shortCutData;
 		public ObservableCollection<File>? Files 
 		{
 			get => _fileList ?? null;
 			set
 			{
 				_fileList = value;
+				OnPropertyChanged();
+			}
+		}
+		
+		public File? SelectedFile 
+		{
+			get => _selectedFile ?? null;
+			set
+			{
+				_selectedFile = value;
+				OnPropertyChanged();
+			}
+		}
+		public string ShortCutData 
+		{
+			get => _shortCutData ?? null;
+			set
+			{
+				_shortCutData = value;
 				OnPropertyChanged();
 			}
 		}
@@ -63,15 +84,29 @@ namespace ShortcutEditorWPF.ViewModels
 			Files = SearchFiles(_currentDirectory, new string [] {".lnk"});
 		}
 		#endregion
+		#region OpenSelectedShortCutCommand
+		public ICommand OpenSelectedShortCutCommand { get; }
+		private bool CanOpenSelectedShortCutExecute(object p) => true;
+
+		private void OnOpenSelectedShortCutExecuted(object p)
+		{
+			if (SelectedFile != null) ShortCutData = Shortcut.ReadFromFile(SelectedFile.FullName).ToString();
+		}
+		#endregion
+		
 		#endregion
 		
 		public MainWindowViewModel()
 		{
 			_currentDirectory = GetStartDirectory();
+			ShortCutData = " ";
 			
 			#region Commands
 			OpenDirectoryCommand =
 				new LambdaCommand(OnOpenDirectoryExecuted, CanOpenDirectoryCommandExecute);
+			
+			OpenSelectedShortCutCommand =
+				new LambdaCommand(OnOpenSelectedShortCutExecuted, CanOpenSelectedShortCutExecute);
 			
 			CloseApplicationCommand =
 				new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);

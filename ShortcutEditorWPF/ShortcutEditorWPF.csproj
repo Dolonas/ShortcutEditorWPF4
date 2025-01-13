@@ -8,6 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="securifybv.PropertyStore" Version="0.1.0" />
+      <PackageReference Include="securifybv.ShellLink" Version="0.1.0" />
       <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
       <PackageReference Include="WindowsAPICodePack-ShellExtensions" Version="1.1.1" />
     </ItemGroup>
