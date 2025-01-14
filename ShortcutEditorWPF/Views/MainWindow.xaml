@@ -75,15 +75,30 @@
         </DockPanel>
         <DockPanel Grid.Column="2" Grid.Row="2" LastChildFill="True" Margin="0 0 2 0">
             <GroupBox DockPanel.Dock="Top" Width="auto" Height="auto" Header="Параметры выбранного ярлыка" >
-                <TextBox DockPanel.Dock="Left"
-                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                             ScrollViewer.VerticalScrollBarVisibility="Auto"
-                             ScrollViewer.CanContentScroll="True"
-                             TextWrapping="Wrap"
-                             Text="{Binding ShortCutData}"
-                             Width="auto" Height="380" VerticalAlignment="Top"
-                             Padding="4 8 4 0"
-                             Background="Azure"/>
+                <DockPanel>
+                    <DockPanel Margin="0 0 2 10" DockPanel.Dock="Top">
+                        <TextBlock DockPanel.Dock="Left" Text="Link: "
+                                   Height="25" VerticalAlignment="Center"
+                                   Padding="4" />
+                        <TextBlock DockPanel.Dock="Left"
+                                   Text="{Binding CurrentShortCut.ExtraData}"
+                                   Width="300" Height="30" VerticalAlignment="Center"
+                                   Padding="4 8 4 0"
+                                   Background="Azure">
+                        </TextBlock>
+                    </DockPanel>
+                    <DockPanel Margin="0 0 2 10" DockPanel.Dock="Top">
+                        <TextBlock DockPanel.Dock="Left" Text="Header: "
+                                   Height="25" 
+                                   Padding="4" />
+                        <TextBlock DockPanel.Dock="Left"
+                                   Text="{Binding CurrentShortCut.CreationTime}"
+                                   Width="300" Height="30" VerticalAlignment="Center"
+                                   Padding="4 8 4 0"
+                                   Background="Azure">
+                        </TextBlock>
+                    </DockPanel>
+                </DockPanel>
             </GroupBox>
         </DockPanel>
         <DockPanel Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" LastChildFill="True" Margin="0 0 2 0" Height="26" VerticalAlignment="Center">
