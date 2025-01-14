@@ -86,10 +86,12 @@
                              Background="Azure"/>
             </GroupBox>
         </DockPanel>
-        <DockPanel Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" LastChildFill="True" Margin="0 0 2 0" Height="26" VerticalAlignment="Center">
+        <DockPanel Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" LastChildFill="True" Margin="0 0 2 0" Height="26" VerticalAlignment="Center">
             <StatusBar DockPanel.Dock="Top">
                 <StatusBarItem MinWidth="150" MaxWidth="750" Height="auto" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding CurrentDirectoryDescription, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Left" Height="30"></TextBlock>
+                    <TextBlock Text="{Binding CurrentDirectoryDescription,
+                    UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"
+                               HorizontalAlignment="Left" Height="auto"></TextBlock>
                 </StatusBarItem>
             </StatusBar>
         </DockPanel>

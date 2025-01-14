@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.IO.Enumeration;
 using System.Linq;
 using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -17,8 +18,9 @@ namespace ShortcutEditorWPF.ViewModels
 		private string _title = "ShortcutEditor";
 		private string _currentDirectory;
 		private ObservableCollection<File>? _fileList;
+		private Shortcut? _currentShortCut;
 		private File? _selectedFile;
-		private string _shortCutData;
+		private string? _shortCutData;
 		public ObservableCollection<File>? Files 
 		{
 			get => _fileList ?? null;
@@ -38,12 +40,23 @@ namespace ShortcutEditorWPF.ViewModels
 				OnPropertyChanged();
 			}
 		}
-		public string ShortCutData 
+		public Shortcut? CurrentShortCut 
+		{
+			get => _currentShortCut ?? null;
+			set
+			{
+				_currentShortCut = value;
+				
+				OnPropertyChanged();
+			}
+		}
+		public string? ShortCutData 
 		{
 			get => _shortCutData ?? null;
 			set
 			{
 				_shortCutData = value;
+				
 				OnPropertyChanged();
 			}
 		}
@@ -84,13 +97,15 @@ namespace ShortcutEditorWPF.ViewModels
 			Files = SearchFiles(_currentDirectory, new string [] {".lnk"});
 		}
 		#endregion
+		
 		#region OpenSelectedShortCutCommand
 		public ICommand OpenSelectedShortCutCommand { get; }
 		private bool CanOpenSelectedShortCutExecute(object p) => true;
 
 		private void OnOpenSelectedShortCutExecuted(object p)
 		{
-			if (SelectedFile != null) ShortCutData = Shortcut.ReadFromFile(SelectedFile.FullName).ToString();
+			if (SelectedFile != null)
+				CurrentShortCut = Shortcut.ReadFromFile(SelectedFile.FullName);
 		}
 		#endregion
 		
@@ -98,8 +113,11 @@ namespace ShortcutEditorWPF.ViewModels
 		
 		public MainWindowViewModel()
 		{
+			CurrentShortCut = new Shortcut();
 			_currentDirectory = GetStartDirectory();
-			ShortCutData = " ";
+			ShortCutData = string.Empty;
+			
+			//CurrentShortCut.
 			
 			#region Commands
 			OpenDirectoryCommand =
@@ -110,8 +128,6 @@ namespace ShortcutEditorWPF.ViewModels
 			
 			CloseApplicationCommand =
 				new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
-			
-			
 			#endregion
 		}
 		
