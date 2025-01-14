@@ -76,10 +76,14 @@
         <DockPanel Grid.Column="2" Grid.Row="2" LastChildFill="True" Margin="0 0 2 0">
             <GroupBox DockPanel.Dock="Top" Width="auto" Height="auto" Header="Параметры выбранного ярлыка" >
                 <TextBox DockPanel.Dock="Left"
-                           Text="{Binding ShortCutData}"
-                           Width="auto" Height="300" VerticalAlignment="Top"
-                           Padding="4 8 4 0"
-                           Background="Azure"/>
+                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             ScrollViewer.CanContentScroll="True"
+                             TextWrapping="Wrap"
+                             Text="{Binding ShortCutData}"
+                             Width="auto" Height="380" VerticalAlignment="Top"
+                             Padding="4 8 4 0"
+                             Background="Azure"/>
             </GroupBox>
         </DockPanel>
         <DockPanel Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" LastChildFill="True" Margin="0 0 2 0" Height="26" VerticalAlignment="Center">
