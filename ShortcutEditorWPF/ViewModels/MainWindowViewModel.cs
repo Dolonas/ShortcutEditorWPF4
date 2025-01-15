@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using ShellLink;
 using ShortcutEditorWPF.Infrastructure.Commands;
+using ShortcutEditorWPF.Models;
 using ShortcutEditorWPF.ViewModels.Base.Base;
 using File = ShortcutEditorWPF.Models.File;
 using Path = System.IO.Path;
@@ -18,7 +19,7 @@ namespace ShortcutEditorWPF.ViewModels
 		private string _title = "ShortcutEditor";
 		private string _currentDirectory;
 		private ObservableCollection<File>? _fileList;
-		private Shortcut? _currentShortCut;
+		private ShortcutNative? _currentShortCut;
 		private File? _selectedFile;
 		private string? _shortCutData;
 		public ObservableCollection<File>? Files 
@@ -40,13 +41,12 @@ namespace ShortcutEditorWPF.ViewModels
 				OnPropertyChanged();
 			}
 		}
-		public Shortcut? CurrentShortCut 
+		public ShortcutNative? CurrentShortCut 
 		{
 			get => _currentShortCut ?? null;
 			set
 			{
 				_currentShortCut = value;
-				
 				OnPropertyChanged();
 			}
 		}
@@ -56,7 +56,6 @@ namespace ShortcutEditorWPF.ViewModels
 			set
 			{
 				_shortCutData = value;
-				
 				OnPropertyChanged();
 			}
 		}
@@ -105,7 +104,8 @@ namespace ShortcutEditorWPF.ViewModels
 		private void OnOpenSelectedShortCutExecuted(object p)
 		{
 			if (SelectedFile != null)
-				CurrentShortCut = Shortcut.ReadFromFile(SelectedFile.FullName);
+				if (CurrentShortCut != null)
+					CurrentShortCut.InternalShortcut = Shortcut.ReadFromFile(SelectedFile.FullName);
 		}
 		#endregion
 		
@@ -113,12 +113,9 @@ namespace ShortcutEditorWPF.ViewModels
 		
 		public MainWindowViewModel()
 		{
-			CurrentShortCut = new Shortcut();
+			CurrentShortCut = new ShortcutNative();
 			_currentDirectory = GetStartDirectory();
 			ShortCutData = string.Empty;
-			
-			//CurrentShortCut.
-			
 			#region Commands
 			OpenDirectoryCommand =
 				new LambdaCommand(OnOpenDirectoryExecuted, CanOpenDirectoryCommandExecute);
