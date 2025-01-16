@@ -105,7 +105,10 @@ namespace ShortcutEditorWPF.ViewModels
 		{
 			if (SelectedFile != null)
 				if (CurrentShortCut != null)
-					CurrentShortCut.InternalShortcut = Shortcut.ReadFromFile(SelectedFile.FullName);
+				{
+					CurrentShortCut = new ShortcutNative(Shortcut.ReadFromFile(SelectedFile.FullName));
+					ShortCutData = CurrentShortCut.InternalShortcut.ToString();
+				}
 		}
 		#endregion
 		
@@ -113,7 +116,7 @@ namespace ShortcutEditorWPF.ViewModels
 		
 		public MainWindowViewModel()
 		{
-			CurrentShortCut = new ShortcutNative();
+			CurrentShortCut = new ShortcutNative(new Shortcut());
 			_currentDirectory = GetStartDirectory();
 			ShortCutData = string.Empty;
 			#region Commands

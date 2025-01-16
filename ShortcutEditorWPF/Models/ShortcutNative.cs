@@ -5,7 +5,6 @@ namespace ShortcutEditorWPF.Models;
 public class ShortcutNative
 {
     internal Shortcut InternalShortcut { get; set; }
-
     public string Link
     {
         get
@@ -28,9 +27,5 @@ public class ShortcutNative
     public ShortcutNative(Shortcut internalShortcut)
     {
         InternalShortcut = internalShortcut;
-    }
-
-    public ShortcutNative() : this(new Shortcut())
-    {
     }
 }
