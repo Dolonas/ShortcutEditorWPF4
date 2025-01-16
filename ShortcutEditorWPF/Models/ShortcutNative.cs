@@ -9,8 +9,8 @@ public class ShortcutNative
     {
         get
         {
-            if (InternalShortcut is not null && InternalShortcut.LinkInfo is not null)
-                return InternalShortcut.LinkInfo.CommonPathSuffixUnicode;
+            if (InternalShortcut.LinkInfo is not null)
+                return InternalShortcut.StringData.WorkingDir;
             return "Nun";
         }
     }
@@ -18,8 +18,7 @@ public class ShortcutNative
     {
         get
         {
-            if (InternalShortcut is not null)
-                return InternalShortcut.CreationTime.ToString();
+            return InternalShortcut.CreationTime.ToString();
             return "Nun";
         }
     }
