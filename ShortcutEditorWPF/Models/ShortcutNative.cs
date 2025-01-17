@@ -9,7 +9,7 @@ public class ShortcutNative
     {
         get
         {
-            if (InternalShortcut.LinkInfo is not null)
+            if (InternalShortcut.StringData is not null && InternalShortcut.StringData.WorkingDir is not null)
                 return InternalShortcut.StringData.WorkingDir;
             return "Nun";
         }

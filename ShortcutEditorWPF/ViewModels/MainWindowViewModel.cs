@@ -85,6 +85,8 @@ namespace ShortcutEditorWPF.ViewModels
 
 		private void OnOpenDirectoryExecuted(object p)
 		{
+			if(_fileList is { Count: > 0 })
+				return;
 			var ofd = new CommonOpenFileDialog("Выберите папку")
 			{
 				InitialDirectory = _currentDirectory,
