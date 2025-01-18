@@ -1,7 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.IO.Enumeration;
 using System.Linq;
 using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -19,7 +18,7 @@ namespace ShortcutEditorWPF.ViewModels
 		private string _title = "ShortcutEditor";
 		private string _currentDirectory;
 		private ObservableCollection<File>? _fileList;
-		private ShortcutNative? _currentShortCut;
+		private ShortcutNative _currentShortCut;
 		private File? _selectedFile;
 		private string? _shortCutData;
 		public ObservableCollection<File>? Files 
@@ -41,10 +40,10 @@ namespace ShortcutEditorWPF.ViewModels
 				OnPropertyChanged();
 			}
 		}
-		public ShortcutNative? CurrentShortCut 
+		public ShortcutNative CurrentShortCut 
 		{
-			get => _currentShortCut ?? null;
-			set
+			get => _currentShortCut;
+			private set
 			{
 				_currentShortCut = value;
 				OnPropertyChanged();
@@ -105,12 +104,11 @@ namespace ShortcutEditorWPF.ViewModels
 
 		private void OnOpenSelectedShortCutExecuted(object p)
 		{
-			if (SelectedFile != null)
-				if (CurrentShortCut != null)
-				{
-					CurrentShortCut = new ShortcutNative(Shortcut.ReadFromFile(SelectedFile.FullName));
-					ShortCutData = CurrentShortCut.InternalShortcut.ToString();
-				}
+			if (_fileList is { Count: > 0 } && SelectedFile != null)
+			{
+				CurrentShortCut = new ShortcutNative(Shortcut.ReadFromFile(SelectedFile.FullName));
+				ShortCutData = CurrentShortCut.InternalShortcut.ToString();
+			}
 		}
 		#endregion
 		
