@@ -101,7 +101,7 @@ namespace ShortcutEditorWPF.ViewModels
 				Multiselect = true
 			};
 			if (ofd.ShowDialog() != CommonFileDialogResult.Ok) return;
-			_currentDirectory = Path.GetFullPath(ofd.FileName);
+			CurrentDirectory = Path.GetFullPath(ofd.FileName);
 			Files = SearchFiles(_currentDirectory, new string [] {".lnk"});
 		}
 		#endregion
