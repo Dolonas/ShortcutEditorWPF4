@@ -16,7 +16,7 @@ namespace ShortcutEditorWPF.ViewModels
 	internal class MainWindowViewModel: ViewModel
 	{
 		private string _title = "ShortcutEditor";
-		private string _currentDirectory;
+		private string? _currentDirectory;
 		private ObservableCollection<File>? _fileList;
 		private ShortcutNative _currentShortCut;
 		private File? _selectedFile;
@@ -52,15 +52,23 @@ namespace ShortcutEditorWPF.ViewModels
 		public string? ShortCutData 
 		{
 			get => _shortCutData ?? null;
-			set
+			private set
 			{
 				_shortCutData = value;
 				OnPropertyChanged();
 			}
 		}
 		
+		public string? CurrentDirectory 
+		{
+			get => String.Format("Current directory: " + _currentDirectory);
+			set
+			{
+				_currentDirectory = value;
+				OnPropertyChanged();
+			}
+		}
 
-		public string CurrentDirectoryDescription => String.Format("Current directory: " + _currentDirectory);
 		public string Title
 		{
 			get => _title;
@@ -98,6 +106,17 @@ namespace ShortcutEditorWPF.ViewModels
 		}
 		#endregion
 		
+		#region ClearListCommand
+		public ICommand ClearListCommand { get; }
+		private bool CanClearListExecute(object p) => true;
+
+		private void OnClearListExecuted(object p)
+		{
+			Files = new ObservableCollection<File>();
+			CurrentShortCut = new ShortcutNative(new Shortcut());
+		}
+		#endregion
+		
 		#region OpenSelectedShortCutCommand
 		public ICommand OpenSelectedShortCutCommand { get; }
 		private bool CanOpenSelectedShortCutExecute(object p) => true;
@@ -123,6 +142,9 @@ namespace ShortcutEditorWPF.ViewModels
 			OpenDirectoryCommand =
 				new LambdaCommand(OnOpenDirectoryExecuted, CanOpenDirectoryCommandExecute);
 			
+			ClearListCommand =
+				new LambdaCommand(OnClearListExecuted, CanClearListExecute);
+			
 			OpenSelectedShortCutCommand =
 				new LambdaCommand(OnOpenSelectedShortCutExecuted, CanOpenSelectedShortCutExecute);
 			
@@ -131,7 +153,7 @@ namespace ShortcutEditorWPF.ViewModels
 			#endregion
 		}
 		
-		private string GetStartDirectory()
+		private string? GetStartDirectory()
 		{
 			var startDirectoryVar1 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Develop_tests_link\shortcuts_work");
 			if (Directory.Exists(startDirectoryVar1))

@@ -36,6 +36,7 @@
         <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Height="25" VerticalAlignment="Center" Padding="3">
             <MenuItem Header="Файл">
                 <MenuItem Header="Указать папку" Command="{Binding OpenDirectoryCommand}"></MenuItem>
+                <MenuItem Header="Очистить список ярлыков" Command="{Binding ClearListCommand}"></MenuItem>
                 <Separator />
                 <MenuItem Header="Выход" Command="{Binding CloseApplicationCommand}"></MenuItem>
             </MenuItem>
@@ -198,7 +199,7 @@
         <DockPanel Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="3" LastChildFill="True" Margin="0 0 2 0" Height="26" VerticalAlignment="Center">
             <StatusBar DockPanel.Dock="Top">
                 <StatusBarItem MinWidth="150" MaxWidth="750" Height="auto" HorizontalAlignment="Left" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding CurrentDirectoryDescription,
+                    <TextBlock Text="{Binding CurrentDirectory,
                     UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"
                                HorizontalAlignment="Left" Height="auto"></TextBlock>
                 </StatusBarItem>
