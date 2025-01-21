@@ -1,7 +1,10 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using ShellLink;
@@ -63,7 +66,7 @@ namespace ShortcutEditorWPF.ViewModels
 		public string? SearchingString 
 		{
 			get => _searchingString ?? null;
-			private set
+			set
 			{
 				_searchingString = value;
 				OnPropertyChanged();
@@ -73,7 +76,7 @@ namespace ShortcutEditorWPF.ViewModels
 		public string? NewPartOfString 
 		{
 			get => _newPartOfString ?? null;
-			private set
+			set
 			{
 				_newPartOfString = value;
 				OnPropertyChanged();
@@ -158,11 +161,9 @@ namespace ShortcutEditorWPF.ViewModels
 
 		private void OnFindReplaceAndRewriteLinkExecuted(object p)
 		{
-			if (_fileList is { Count: > 0 } && SelectedFile != null)
-			{
-				CurrentShortCut = new ShortcutNative(Shortcut.ReadFromFile(SelectedFile.FullName));
-				ShortCutData = CurrentShortCut.InternalShortcut.ToString();
-			}
+			var properties = typeof(Shortcut).GetProperties()
+				.Where(p => p.PropertyType == typeof(string) && p.CanRead && p.CanWrite);
+			GetAllPropertiesAndReplaceOnStringToAnother(properties, CurrentShortCut, _searchingString, _newPartOfString);
 		}
 		#endregion
 		
@@ -227,6 +228,21 @@ namespace ShortcutEditorWPF.ViewModels
 			catch (PathTooLongException pathEx)
 			{
 				throw new Exception(pathEx.Message);
+			}
+		}
+
+		internal void GetAllPropertiesAndReplaceOnStringToAnother(IEnumerable<PropertyInfo> properties, object obj, string searchingString, string newPartOfString)
+		{
+			foreach (var property in properties)
+			{
+				if (obj == null) continue;
+				{
+					var value = (string)property.GetValue(obj, null);
+					if (value == null)
+					{
+						property.SetValue(obj, string.Empty, null);
+					}
+				}
 			}
 		}
 	}

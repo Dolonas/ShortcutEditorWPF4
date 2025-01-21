@@ -13,14 +13,14 @@
         WindowStartupLocation="CenterScreen"
         WindowState="Normal"
         Title="{Binding Title}"
-        Width="1160" Height="680" >
+        Width="1160" Height="710" >
     <Window.DataContext>
         <viewModels:MainWindowViewModel/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.2*"/>
-            <RowDefinition Height="0.2*" />
+            <RowDefinition Height="0.16*" />
             <RowDefinition Height="2*"/>
             <RowDefinition Height="0.25*"/>
             <RowDefinition Height="0.02*"/>
@@ -30,7 +30,7 @@
             <ColumnDefinition  Width="2.0*"/>
             <ColumnDefinition  Width="2.0*"/>
             <ColumnDefinition  Width="3.0*"/>
-            <ColumnDefinition  Width="0.1*"/>
+            <ColumnDefinition  Width="0.07*"/>
         </Grid.ColumnDefinitions>
         <Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Height="25" VerticalAlignment="Center" Padding="3">
             <MenuItem Header="Файл">
@@ -43,14 +43,15 @@
                 <MenuItem Header="О программе" ></MenuItem>
             </MenuItem>
         </Menu>
-        <DockPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Margin="0 0 2 10">
+        <DockPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Margin="0 0 2 2">
             <TextBlock DockPanel.Dock="Left" Text="Файл: "
                        Height="25" VerticalAlignment="Center"
+                       Margin="0 0 4 2"
                        Padding="4" />
             <TextBlock DockPanel.Dock="Left"
                        Text="{Binding SelectedFile}"
                        Width="300" Height="30" VerticalAlignment="Center"
-                       Padding="4 8 4 0"
+                       Padding="2 3 2 0"
                        Background="Azure">
                 <TextBlock.ContextMenu>
                     <ContextMenu>
@@ -65,9 +66,9 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Left"
                 Margin="5 0 0 0 "
-                Content="Открыть"
+                Content="Прочитать"
                 Command="{Binding OpenSelectedShortCutCommand}"
-                ToolTip="Открыть выбранный чертёж в Компасе" />
+                ToolTip="Прочитать свойства выбранного ярлыка" />
         </DockPanel>
         <DockPanel Grid.Column="1" Grid.Row="2" LastChildFill="True" Margin="0 0 2 0">
             <GroupBox DockPanel.Dock="Top" Width="auto" Height="auto" Header="Список ярлыков">
@@ -201,38 +202,33 @@
                                Height="25" VerticalAlignment="Center"
                                Margin="0 0 10 0 "
                                Padding="4" />
-                    <TextBlock DockPanel.Dock="Left"
+                    <TextBox DockPanel.Dock="Left"
                                Text="{Binding SearchingString, Mode=TwoWay}"
-                               Width="260" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left"
+                               Width="250" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left"
                                Padding="4 8 4 0"
                                Background="Cornsilk">
-                    </TextBlock>
+                    </TextBox>
                     </DockPanel>
                     <DockPanel Margin="0 0 2 10" DockPanel.Dock="Top" Height="40">
                         <TextBlock DockPanel.Dock="Left" Text="Заменить на: "
                                    Height="25" VerticalAlignment="Center"
                                    Padding="4" />
-                        <TextBlock DockPanel.Dock="Left"
+                        <TextBox DockPanel.Dock="Left"
                                    Text="{Binding NewPartOfString, Mode=TwoWay}"
-                                   Width="260" Height="30" VerticalAlignment="Center"
+                                   Width="250" Height="30" VerticalAlignment="Center"
                                    Padding="4 8 4 0"
                                    Background="Cornsilk">
-                            <TextBlock.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Копировать" Command="{Binding CopyShortFileNameCommand}" />
-                                </ContextMenu>
-                            </TextBlock.ContextMenu>
-                        </TextBlock>
+                        </TextBox>
                         <Button
                             DockPanel.Dock="Right"
                             Height="30"
-                            Width="120"
+                            Width="125"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             Margin="5 0 0 0 "
                             Content="Заменить и записать"
                             Command="{Binding FindReplaceAndRewriteLinkCommand}"
-                            ToolTip="Открыть выбранный чертёж в Компасе" />
+                            ToolTip="Все совпадения в свойствах ярлыка заменить на указанную подстроку" />
                     </DockPanel>
                 </StackPanel>
             </GroupBox>
