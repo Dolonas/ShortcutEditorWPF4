@@ -21,6 +21,8 @@ namespace ShortcutEditorWPF.ViewModels
 		private ShortcutNative _currentShortCut;
 		private File? _selectedFile;
 		private string? _shortCutData;
+		private string? _searchingString;
+		private string? _newPartOfString;
 		public ObservableCollection<File>? Files 
 		{
 			get => _fileList ?? null;
@@ -55,6 +57,25 @@ namespace ShortcutEditorWPF.ViewModels
 			private set
 			{
 				_shortCutData = value;
+				OnPropertyChanged();
+			}
+		}
+		public string? SearchingString 
+		{
+			get => _searchingString ?? null;
+			private set
+			{
+				_searchingString = value;
+				OnPropertyChanged();
+			}
+		}
+		
+		public string? NewPartOfString 
+		{
+			get => _newPartOfString ?? null;
+			private set
+			{
+				_newPartOfString = value;
 				OnPropertyChanged();
 			}
 		}
@@ -152,6 +173,8 @@ namespace ShortcutEditorWPF.ViewModels
 			CurrentShortCut = new ShortcutNative(new Shortcut());
 			_currentDirectory = GetStartDirectory();
 			ShortCutData = string.Empty;
+			SearchingString = string.Empty;
+			NewPartOfString = string.Empty;
 			#region Commands
 			OpenDirectoryCommand =
 				new LambdaCommand(OnOpenDirectoryExecuted, CanOpenDirectoryCommandExecute);

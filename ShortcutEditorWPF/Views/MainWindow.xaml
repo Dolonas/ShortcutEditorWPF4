@@ -108,7 +108,7 @@
                         <TextBox DockPanel.Dock="Left"
                                    HorizontalAlignment="Left"
                                    Text="{Binding CurrentShortCut.Attribute, Mode=OneWay}"
-                                   Width="430" Height="30" VerticalAlignment="Bottom"
+                                   Width="400" Height="30" VerticalAlignment="Bottom"
                                    Padding="4 8 4 0"
                                    Background="Azure">
                         </TextBox>
@@ -202,15 +202,10 @@
                                Margin="0 0 10 0 "
                                Padding="4" />
                     <TextBlock DockPanel.Dock="Left"
-                               Text="{Binding SelectedFile}"
+                               Text="{Binding SearchingString, Mode=TwoWay}"
                                Width="260" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left"
                                Padding="4 8 4 0"
                                Background="Cornsilk">
-                        <TextBlock.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Копировать" Command="{Binding CopyShortFileNameCommand}" />
-                            </ContextMenu>
-                        </TextBlock.ContextMenu>
                     </TextBlock>
                     </DockPanel>
                     <DockPanel Margin="0 0 2 10" DockPanel.Dock="Top" Height="40">
@@ -218,7 +213,7 @@
                                    Height="25" VerticalAlignment="Center"
                                    Padding="4" />
                         <TextBlock DockPanel.Dock="Left"
-                                   Text="{Binding SelectedFile}"
+                                   Text="{Binding NewPartOfString, Mode=TwoWay}"
                                    Width="260" Height="30" VerticalAlignment="Center"
                                    Padding="4 8 4 0"
                                    Background="Cornsilk">
