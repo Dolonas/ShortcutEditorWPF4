@@ -131,6 +131,20 @@ namespace ShortcutEditorWPF.ViewModels
 		}
 		#endregion
 		
+		#region FindReplaceAndRewriteLinkCommand
+		public ICommand FindReplaceAndRewriteLinkCommand { get; }
+		private bool CanFindReplaceAndRewriteLinkExecute(object p) => true;
+
+		private void OnFindReplaceAndRewriteLinkExecuted(object p)
+		{
+			if (_fileList is { Count: > 0 } && SelectedFile != null)
+			{
+				CurrentShortCut = new ShortcutNative(Shortcut.ReadFromFile(SelectedFile.FullName));
+				ShortCutData = CurrentShortCut.InternalShortcut.ToString();
+			}
+		}
+		#endregion
+		
 		#endregion
 		
 		public MainWindowViewModel()
@@ -147,6 +161,9 @@ namespace ShortcutEditorWPF.ViewModels
 			
 			OpenSelectedShortCutCommand =
 				new LambdaCommand(OnOpenSelectedShortCutExecuted, CanOpenSelectedShortCutExecute);
+			
+			FindReplaceAndRewriteLinkCommand =
+				new LambdaCommand(OnFindReplaceAndRewriteLinkExecuted, CanFindReplaceAndRewriteLinkExecute);
 			
 			CloseApplicationCommand =
 				new LambdaCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);

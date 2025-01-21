@@ -20,9 +20,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.2*"/>
-            <RowDefinition Height="0.35*" />
-            <RowDefinition Height="2*"/>
             <RowDefinition Height="0.2*" />
+            <RowDefinition Height="2*"/>
             <RowDefinition Height="0.25*"/>
             <RowDefinition Height="0.02*"/>
         </Grid.RowDefinitions>
@@ -93,7 +92,7 @@
                          ScrollViewer.CanContentScroll="True"
                          TextWrapping="Wrap"
                          Text="{Binding ShortCutData, Mode=OneWay}"
-                         Width="auto" Height="420" VerticalAlignment="Top"
+                         Width="auto" Height="auto" VerticalAlignment="Top"
                          Padding="4 8 4 0"
                          Background="Azure"/>
              </GroupBox>       
@@ -195,8 +194,55 @@
                     </DockPanel>
                 </StackPanel>
             </GroupBox>
+            <GroupBox DockPanel.Dock="Bottom" Width="auto" Height="auto" Header="Редактировать">
+                <StackPanel Orientation="Vertical">
+                    <DockPanel Margin="0 0 2 10" DockPanel.Dock="Top" Height="40">
+                    <TextBlock DockPanel.Dock="Left" Text="Все строки: "
+                               Height="25" VerticalAlignment="Center"
+                               Margin="0 0 10 0 "
+                               Padding="4" />
+                    <TextBlock DockPanel.Dock="Left"
+                               Text="{Binding SelectedFile}"
+                               Width="260" Height="30" VerticalAlignment="Center" HorizontalAlignment="Left"
+                               Padding="4 8 4 0"
+                               Background="Cornsilk">
+                        <TextBlock.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Копировать" Command="{Binding CopyShortFileNameCommand}" />
+                            </ContextMenu>
+                        </TextBlock.ContextMenu>
+                    </TextBlock>
+                    </DockPanel>
+                    <DockPanel Margin="0 0 2 10" DockPanel.Dock="Top" Height="40">
+                        <TextBlock DockPanel.Dock="Left" Text="Заменить на: "
+                                   Height="25" VerticalAlignment="Center"
+                                   Padding="4" />
+                        <TextBlock DockPanel.Dock="Left"
+                                   Text="{Binding SelectedFile}"
+                                   Width="260" Height="30" VerticalAlignment="Center"
+                                   Padding="4 8 4 0"
+                                   Background="Cornsilk">
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Копировать" Command="{Binding CopyShortFileNameCommand}" />
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
+                        <Button
+                            DockPanel.Dock="Right"
+                            Height="30"
+                            Width="120"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            Margin="5 0 0 0 "
+                            Content="Заменить и записать"
+                            Command="{Binding FindReplaceAndRewriteLinkCommand}"
+                            ToolTip="Открыть выбранный чертёж в Компасе" />
+                    </DockPanel>
+                </StackPanel>
+            </GroupBox>
         </DockPanel>
-        <DockPanel Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="3" LastChildFill="True" Margin="0 0 2 0" Height="26" VerticalAlignment="Center">
+        <DockPanel Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" LastChildFill="True" Margin="0 0 2 0" Height="26" VerticalAlignment="Center">
             <StatusBar DockPanel.Dock="Top">
                 <StatusBarItem MinWidth="150" MaxWidth="750" Height="auto" HorizontalAlignment="Left" VerticalAlignment="Center">
                     <TextBlock Text="{Binding CurrentDirectory,
