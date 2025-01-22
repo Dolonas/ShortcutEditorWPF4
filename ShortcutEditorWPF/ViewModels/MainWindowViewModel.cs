@@ -161,8 +161,8 @@ namespace ShortcutEditorWPF.ViewModels
 
 		private void OnFindReplaceAndRewriteLinkExecuted(object p)
 		{
-			var properties = typeof(Shortcut).GetProperties()
-				.Where(p => p.PropertyType == typeof(string) && p.CanRead && p.CanWrite);
+			var properties = typeof(ShortcutNative).GetProperties()
+				.Where(p => p.PropertyType == typeof(string) && p is { CanRead: true, CanWrite: true });
 			if (!string.IsNullOrEmpty(_searchingString) && !string.IsNullOrEmpty(_newPartOfString))
 				GetAllPropertiesAndReplaceOnStringToAnother(properties, CurrentShortCut, _searchingString, _newPartOfString);
 		}
