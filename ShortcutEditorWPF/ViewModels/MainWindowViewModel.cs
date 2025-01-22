@@ -163,7 +163,8 @@ namespace ShortcutEditorWPF.ViewModels
 		{
 			var properties = typeof(Shortcut).GetProperties()
 				.Where(p => p.PropertyType == typeof(string) && p.CanRead && p.CanWrite);
-			GetAllPropertiesAndReplaceOnStringToAnother(properties, CurrentShortCut, _searchingString, _newPartOfString);
+			if (!string.IsNullOrEmpty(_searchingString) && !string.IsNullOrEmpty(_newPartOfString))
+				GetAllPropertiesAndReplaceOnStringToAnother(properties, CurrentShortCut, _searchingString, _newPartOfString);
 		}
 		#endregion
 		
@@ -231,16 +232,25 @@ namespace ShortcutEditorWPF.ViewModels
 			}
 		}
 
-		internal void GetAllPropertiesAndReplaceOnStringToAnother(IEnumerable<PropertyInfo> properties, object obj, string searchingString, string newPartOfString)
+		private void GetAllPropertiesAndReplaceOnStringToAnother(IEnumerable<PropertyInfo> properties, object obj, string searchingString, string newPartOfString)
 		{
 			foreach (var property in properties)
 			{
 				if (obj == null) continue;
 				{
-					var value = (string)property.GetValue(obj, null);
-					if (value == null)
+					//var shortCut = (Shortcut)obj;
+					var type = property.GetType();
+					if (type.Namespace != null && !type.Namespace.StartsWith("System"))
 					{
-						property.SetValue(obj, string.Empty, null);
+						var properties2 = typeof(Shortcut).GetProperties()
+							.Where(p => p.PropertyType == typeof(string) && p is { CanRead: true, CanWrite: true });
+						GetAllPropertiesAndReplaceOnStringToAnother(properties2, obj, searchingString, newPartOfString);
+					}
+						
+					if (type != typeof(string)) continue;
+					{
+						var newString = (string)property.GetValue(obj)!;
+						property.SetValue(obj, newString.Replace(searchingString, newPartOfString), null);
 					}
 				}
 			}
