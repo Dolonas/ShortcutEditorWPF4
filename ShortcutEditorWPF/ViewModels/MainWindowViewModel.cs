@@ -161,10 +161,14 @@ namespace ShortcutEditorWPF.ViewModels
 
 		private void OnFindReplaceAndRewriteLinkExecuted(object p)
 		{
-			var properties = typeof(ShortcutNative).GetProperties()
-				.Where(p => p.PropertyType == typeof(string) && p is { CanRead: true, CanWrite: true });
 			if (!string.IsNullOrEmpty(_searchingString) && !string.IsNullOrEmpty(_newPartOfString))
-				GetAllPropertiesAndReplaceOnStringToAnother(properties, CurrentShortCut, _searchingString, _newPartOfString);
+			{
+				var fieldsWithTypeString = ReplaceFieldsInShortcut(CurrentShortCut, _searchingString, _newPartOfString);
+				foreach (var field in fieldsWithTypeString)
+					Console.WriteLine(field);
+			}
+
+			//GetAllPropertiesAndReplaceOnStringToAnother(properties, CurrentShortCut, _searchingString, _newPartOfString);
 		}
 		#endregion
 		
@@ -232,27 +236,32 @@ namespace ShortcutEditorWPF.ViewModels
 			}
 		}
 
-		private void GetAllPropertiesAndReplaceOnStringToAnother(IEnumerable<PropertyInfo> properties, object obj, string searchingString, string newPartOfString)
+		private IEnumerable<string> ReplaceFieldsInShortcut(object obj, string searchingString, string newPartOfString)
 		{
-			foreach (var property in properties)
+			foreach (var field in obj.GetType().GetFields())
 			{
-				if (obj == null) continue;
-				{
-					//var shortCut = (Shortcut)obj;
-					var type = property.GetType();
-					if (type.Namespace != null && !type.Namespace.StartsWith("System"))
-					{
-						var properties2 = typeof(Shortcut).GetProperties()
-							.Where(p => p.PropertyType == typeof(string) && p is { CanRead: true, CanWrite: true });
-						GetAllPropertiesAndReplaceOnStringToAnother(properties2, obj, searchingString, newPartOfString);
-					}
-						
-					if (type != typeof(string)) continue;
-					{
-						var newString = (string)property.GetValue(obj)!;
-						property.SetValue(obj, newString.Replace(searchingString, newPartOfString), null);
-					}
-				}
+				if (field.FieldType == typeof(string))
+					yield return new string($"{field.Name} +{field.Name.Replace(searchingString, newPartOfString)}");
+				else
+					foreach (var innerFieldName in ReplaceFieldsInShortcut(field.GetValue(obj),  searchingString,  newPartOfString))
+						yield return field.Name + "." + innerFieldName;
+				// if (obj == null) continue;
+				// {
+				// 	//var shortCut = (Shortcut)obj;
+				// 	var type = property.GetType();
+				// 	if (type.Namespace != null && !type.Namespace.StartsWith("System"))
+				// 	{
+				// 		var properties2 = typeof(Shortcut).GetProperties()
+				// 			.Where(p => p.PropertyType == typeof(string) && p is { CanRead: true, CanWrite: true });
+				// 		GetAllPropertiesAndReplaceOnStringToAnother(properties2, obj, searchingString, newPartOfString);
+				// 	}
+				// 		
+				// 	if (type != typeof(string)) continue;
+				// 	{
+				// 		var newString = (string)property.GetValue(obj)!;
+				// 		property.SetValue(obj, newString.Replace(searchingString, newPartOfString), null);
+				// 	}
+				// }
 			}
 		}
 	}
