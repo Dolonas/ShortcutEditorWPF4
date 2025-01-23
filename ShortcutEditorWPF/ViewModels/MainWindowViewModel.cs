@@ -238,7 +238,8 @@ namespace ShortcutEditorWPF.ViewModels
 
 		private IEnumerable<string> ReplaceFieldsInShortcut(object obj, string searchingString, string newPartOfString)
 		{
-			foreach (var field in obj.GetType().GetFields())
+			var fields = obj.GetType().GetFields();
+			foreach (var field in fields)
 			{
 				if (field.FieldType == typeof(string))
 					yield return new string($"{field.Name} +{field.Name.Replace(searchingString, newPartOfString)}");
