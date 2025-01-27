@@ -163,12 +163,8 @@ namespace ShortcutEditorWPF.ViewModels
 		{
 			if (!string.IsNullOrEmpty(_searchingString) && !string.IsNullOrEmpty(_newPartOfString))
 			{
-				var fieldsWithTypeString = ReplaceFieldsInShortcut(CurrentShortCut, _searchingString, _newPartOfString);
-				foreach (var field in fieldsWithTypeString)
-					Console.WriteLine(field);
+				ReplaceFieldsInShortcut(CurrentShortCut.InternalShortcut, _searchingString, _newPartOfString);
 			}
-
-			//GetAllPropertiesAndReplaceOnStringToAnother(properties, CurrentShortCut, _searchingString, _newPartOfString);
 		}
 		#endregion
 		
@@ -236,33 +232,42 @@ namespace ShortcutEditorWPF.ViewModels
 			}
 		}
 
-		private IEnumerable<string> ReplaceFieldsInShortcut(object obj, string searchingString, string newPartOfString)
+		private void ReplaceFieldsInShortcut(object obj, string searchingString, string newPartOfString)
 		{
-			var fields = obj.GetType().GetFields();
-			foreach (var field in fields)
+			// var stringPropertyNamesAndValues = obj.GetType()
+			// 	.GetProperties()
+			// 	.Where(pi => pi.PropertyType == typeof(string) && pi.GetGetMethod() != null)
+			// 	.Select(pi => new 
+			// 	{
+			// 		Name = pi.Name,
+			// 		Value = pi.GetGetMethod().Invoke(obj, null)
+			// 	});
+			//
+			// foreach (var item in stringPropertyNamesAndValues)
+			// 	Console.WriteLine($"{item.Name} - {item.Value}");
+			
+			var properties = obj.GetType()
+				.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+				.Where(p => p.CanRead && p.CanWrite)
+				.Where(p => !p.GetIndexParameters().Any())
+				.Where(p => p.PropertyType == typeof(string));
+			
+			
+			
+			foreach (PropertyInfo prop in properties)
 			{
-				if (field.FieldType == typeof(string))
-					yield return new string($"{field.Name} +{field.Name.Replace(searchingString, newPartOfString)}");
-				else
-					foreach (var innerFieldName in ReplaceFieldsInShortcut(field.GetValue(obj),  searchingString,  newPartOfString))
-						yield return field.Name + "." + innerFieldName;
-				// if (obj == null) continue;
-				// {
-				// 	//var shortCut = (Shortcut)obj;
-				// 	var type = property.GetType();
-				// 	if (type.Namespace != null && !type.Namespace.StartsWith("System"))
-				// 	{
-				// 		var properties2 = typeof(Shortcut).GetProperties()
-				// 			.Where(p => p.PropertyType == typeof(string) && p is { CanRead: true, CanWrite: true });
-				// 		GetAllPropertiesAndReplaceOnStringToAnother(properties2, obj, searchingString, newPartOfString);
-				// 	}
-				// 		
-				// 	if (type != typeof(string)) continue;
-				// 	{
-				// 		var newString = (string)property.GetValue(obj)!;
-				// 		property.SetValue(obj, newString.Replace(searchingString, newPartOfString), null);
-				// 	}
-				// }
+				// just for reference: if you want to include static properties
+				// you'll have to put null as instance
+				object? target = prop.GetGetMethod().IsStatic ? null : this;
+			
+				// current property value
+				var value = prop.GetValue(target) as string;
+			
+				//ToDo: Put relevant code here
+				var someModifiedValue = value?.Replace(searchingString, newPartOfString);
+			
+				// Write, if required
+				prop.SetValue(target, someModifiedValue);
 			}
 		}
 	}
