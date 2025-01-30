@@ -234,57 +234,40 @@ namespace ShortcutEditorWPF.ViewModels
 
 		private void ReplaceFieldsInShortcut(object obj, string searchingString, string newPartOfString)
 		{
-			// var stringPropertyNamesAndValues = obj.GetType()
-			// 	.GetProperties()
-			// 	.Where(pi => pi.PropertyType == typeof(string) && pi.GetGetMethod() != null)
-			// 	.Select(pi => new 
-			// 	{
-			// 		Name = pi.Name,
-			// 		Value = pi.GetGetMethod().Invoke(obj, null)
-			// 	});
-			//
-			// foreach (var item in stringPropertyNamesAndValues)
-			// 	Console.WriteLine($"{item.Name} - {item.Value}");
 			var thisType = obj.GetType();
 			Console.WriteLine(thisType);
 			var props = thisType.GetProperties();
 			foreach (var p in props)
-				Console.WriteLine(p.ToString());
-			for (int i = 0; i < props.Length; i++)
 			{
-				if(!props[i].CanRead && !props[i].CanWrite)
-					continue;
-				if(!props[i].IsSpecialName)
-					continue;
-				if (props[i].PropertyType == typeof(string))
+				var conColorDefault = Console.ForegroundColor;
+				if (!p.CanRead || !p.CanWrite)
 				{
-					
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.Write("!!!");
 				}
+				Console.WriteLine($"Prop name: {p.Name}, can write: {p.CanWrite}");
+				Console.ForegroundColor = conColorDefault;
+				// var subProp = p.GetP;
+				// if (subProp != null) ReplaceFieldsInShortcut(subProp, searchingString, newPartOfString);
 			}
-			
-			
-			// var properties = obj.GetType()
-			// 	.GetProperties()
-			// 	//.Where(p => p.CanRead && p.CanWrite)
-			// 	//.Where(p => !p.GetIndexParameters().Any())
-			// 	.Where(p => p.PropertyType == typeof(string));
-			
-			
-			
-			// foreach (PropertyInfo prop in properties)
+			// for (int i = 0; i < props.Length; i++)
 			// {
-			// 	// just for reference: if you want to include static properties
-			// 	// you'll have to put null as instance
-			// 	object? target = prop.GetGetMethod().IsStatic ? null : this;
-			//
-			// 	// current property value
-			// 	var value = prop.GetValue(target) as string;
-			//
-			// 	//ToDo: Put relevant code here
-			// 	var someModifiedValue = value?.Replace(searchingString, newPartOfString);
-			//
-			// 	// Write, if required
-			// 	prop.SetValue(target, someModifiedValue);
+			// 	// if (!props[i].CanRead && !props[i].CanWrite && props[i].PropertyType.)
+			// 	// {
+			// 	// 	var subType = props[i].PropertyType;
+			// 	// 	var propValue = props[i].GetValue(subType);
+			// 	// 	if (propValue != null) ReplaceFieldsInShortcut(propValue, searchingString, newPartOfString);
+			// 	// }
+			// 	
+			// 	if (props[i].PropertyType == typeof(string))
+			// 	{
+			// 		//var fieldName = fields[i].Name;
+			// 		var propValue = props[i].GetValue(obj);
+			// 		Console.WriteLine($"Can write: {props[i].CanWrite}, field value: {propValue}");
+			// 		if (propValue == null) continue;
+			// 		var newValue = propValue.ToString()?.Replace(searchingString, newPartOfString);
+			// 		props[i].SetValue(obj, newValue);
+			// 	}
 			// }
 		}
 	}
