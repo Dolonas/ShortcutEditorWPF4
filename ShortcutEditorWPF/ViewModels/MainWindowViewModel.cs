@@ -245,30 +245,47 @@ namespace ShortcutEditorWPF.ViewModels
 			//
 			// foreach (var item in stringPropertyNamesAndValues)
 			// 	Console.WriteLine($"{item.Name} - {item.Value}");
-			
-			var properties = obj.GetType()
-				.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-				.Where(p => p.CanRead && p.CanWrite)
-				.Where(p => !p.GetIndexParameters().Any())
-				.Where(p => p.PropertyType == typeof(string));
-			
-			
-			
-			foreach (PropertyInfo prop in properties)
+			var thisType = obj.GetType();
+			Console.WriteLine(thisType);
+			var props = thisType.GetProperties();
+			foreach (var p in props)
+				Console.WriteLine(p.ToString());
+			for (int i = 0; i < props.Length; i++)
 			{
-				// just for reference: if you want to include static properties
-				// you'll have to put null as instance
-				object? target = prop.GetGetMethod().IsStatic ? null : this;
-			
-				// current property value
-				var value = prop.GetValue(target) as string;
-			
-				//ToDo: Put relevant code here
-				var someModifiedValue = value?.Replace(searchingString, newPartOfString);
-			
-				// Write, if required
-				prop.SetValue(target, someModifiedValue);
+				if(!props[i].CanRead && !props[i].CanWrite)
+					continue;
+				if(!props[i].IsSpecialName)
+					continue;
+				if (props[i].PropertyType == typeof(string))
+				{
+					
+				}
 			}
+			
+			
+			// var properties = obj.GetType()
+			// 	.GetProperties()
+			// 	//.Where(p => p.CanRead && p.CanWrite)
+			// 	//.Where(p => !p.GetIndexParameters().Any())
+			// 	.Where(p => p.PropertyType == typeof(string));
+			
+			
+			
+			// foreach (PropertyInfo prop in properties)
+			// {
+			// 	// just for reference: if you want to include static properties
+			// 	// you'll have to put null as instance
+			// 	object? target = prop.GetGetMethod().IsStatic ? null : this;
+			//
+			// 	// current property value
+			// 	var value = prop.GetValue(target) as string;
+			//
+			// 	//ToDo: Put relevant code here
+			// 	var someModifiedValue = value?.Replace(searchingString, newPartOfString);
+			//
+			// 	// Write, if required
+			// 	prop.SetValue(target, someModifiedValue);
+			// }
 		}
 	}
 }
