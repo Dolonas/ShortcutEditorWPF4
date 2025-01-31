@@ -163,7 +163,7 @@ namespace ShortcutEditorWPF.ViewModels
 		{
 			if (!string.IsNullOrEmpty(_searchingString) && !string.IsNullOrEmpty(_newPartOfString))
 			{
-				ReplaceFieldsInShortcut(CurrentShortCut.InternalShortcut, _searchingString, _newPartOfString);
+				ReplaceFieldsInShortcut(CurrentShortCut.InternalShortcut, 0, _searchingString, _newPartOfString);
 			}
 		}
 		#endregion
@@ -232,9 +232,11 @@ namespace ShortcutEditorWPF.ViewModels
 			}
 		}
 
-		private void ReplaceFieldsInShortcut(object obj, string searchingString, string newPartOfString)
+		private void ReplaceFieldsInShortcut(object? obj, int indent, string searchingString, string newPartOfString)
 		{
+			if (obj is null) return;
 			var thisType = obj.GetType();
+			var indentString = new string(' ', indent);
 			Console.WriteLine(thisType);
 			var props = thisType.GetProperties();
 			foreach (var p in props)
@@ -247,28 +249,22 @@ namespace ShortcutEditorWPF.ViewModels
 				}
 				Console.WriteLine($"Prop name: {p.Name}, can write: {p.CanWrite}");
 				Console.ForegroundColor = conColorDefault;
-				// var subProp = p.GetP;
-				// if (subProp != null) ReplaceFieldsInShortcut(subProp, searchingString, newPartOfString);
+				var propValue = p.GetValue(obj, null);
+				if(p.PropertyType.IsPrimitive || p.PropertyType == typeof(string))
+					Console.WriteLine("{0}{1}: {2}", indentString, p.Name, propValue);
+				else if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
+				{
+					Console.WriteLine("{0}{1}:", indentString, p.Name);
+					var enumerable = (IEnumerable)propValue!;
+					foreach(object child in enumerable)
+						ReplaceFieldsInShortcut(child, indent + 2, searchingString, newPartOfString);
+				}
+				else 
+				{
+					Console.WriteLine("{0}{1}:", indentString, p.Name);
+					ReplaceFieldsInShortcut(propValue, indent + 2, searchingString, newPartOfString);
+				}
 			}
-			// for (int i = 0; i < props.Length; i++)
-			// {
-			// 	// if (!props[i].CanRead && !props[i].CanWrite && props[i].PropertyType.)
-			// 	// {
-			// 	// 	var subType = props[i].PropertyType;
-			// 	// 	var propValue = props[i].GetValue(subType);
-			// 	// 	if (propValue != null) ReplaceFieldsInShortcut(propValue, searchingString, newPartOfString);
-			// 	// }
-			// 	
-			// 	if (props[i].PropertyType == typeof(string))
-			// 	{
-			// 		//var fieldName = fields[i].Name;
-			// 		var propValue = props[i].GetValue(obj);
-			// 		Console.WriteLine($"Can write: {props[i].CanWrite}, field value: {propValue}");
-			// 		if (propValue == null) continue;
-			// 		var newValue = propValue.ToString()?.Replace(searchingString, newPartOfString);
-			// 		props[i].SetValue(obj, newValue);
-			// 	}
-			// }
 		}
 	}
 }
