@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using ShellLink;
@@ -250,19 +251,15 @@ namespace ShortcutEditorWPF.ViewModels
 				Console.WriteLine($"Prop name: {p.Name}, can write: {p.CanWrite}");
 				Console.ForegroundColor = conColorDefault;
 				var propValue = p.GetValue(obj, null);
-				if(p.PropertyType.IsPrimitive || p.PropertyType == typeof(string))
-					Console.WriteLine("{0}{1}: {2}", indentString, p.Name, propValue);
-				else if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
+				if(p.PropertyType == typeof(string))
+					Console.WriteLine($"Отступ: {indentString}, Название свойства: {p.Name}, Значение: {propValue}");
+				else if (propValue != null && !p.PropertyType.IsValueType && propValue.GetType().GetProperties().Length > 0)
 				{
-					Console.WriteLine("{0}{1}:", indentString, p.Name);
-					var enumerable = (IEnumerable)propValue!;
-					foreach(object child in enumerable)
-						ReplaceFieldsInShortcut(child, indent + 2, searchingString, newPartOfString);
-				}
-				else 
-				{
-					Console.WriteLine("{0}{1}:", indentString, p.Name);
-					ReplaceFieldsInShortcut(propValue, indent + 2, searchingString, newPartOfString);
+					Console.WriteLine($"Отступ: {indentString}, Название свойства: {p.Name}, Значение: {p.GetValue(obj)}");
+					Console.WriteLine($"PropValue to string: {propValue}, propValue type: {propValue.GetType()}");
+					Thread.Sleep(2000);
+					if (propValue.GetType() != typeof(ShellLink.Shortcut))
+						ReplaceFieldsInShortcut(propValue, indent + 2, searchingString, newPartOfString);
 				}
 			}
 		}
