@@ -162,10 +162,12 @@ namespace ShortcutEditorWPF.ViewModels
 
 		private void OnFindReplaceAndRewriteLinkExecuted(object p)
 		{
-			if (!string.IsNullOrEmpty(_searchingString) && !string.IsNullOrEmpty(_newPartOfString))
-			{
-				ReplaceFieldsInShortcut(CurrentShortCut.InternalShortcut, 0, _searchingString, _newPartOfString);
-			}
+			if (string.IsNullOrEmpty(_searchingString) || string.IsNullOrEmpty(_newPartOfString)) return;
+			ReplaceFieldsInShortcut(CurrentShortCut.InternalShortcut, 0, _searchingString, _newPartOfString);
+			var fullFileNameForNewShortCut = GetActualFullNameForFile(CurrentShortCut.Path);
+			CurrentShortCut.InternalShortcut.WriteToFile(fullFileNameForNewShortCut);
+			Files = SearchFiles(_currentDirectory, new string [] {".lnk"});
+			Console.WriteLine("D O N E");
 		}
 		#endregion
 		
@@ -266,7 +268,7 @@ namespace ShortcutEditorWPF.ViewModels
 					}
 				}
 					
-				else if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
+				else if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType) && p.PropertyType != typeof(string))
 				{
 					Console.WriteLine("{0}{1}:", indentString, p.Name);
 					var enumerable = (IEnumerable)propValue!;
@@ -282,6 +284,21 @@ namespace ShortcutEditorWPF.ViewModels
 						ReplaceFieldsInShortcut(propValue, indent + 2, searchingString, newPartOfString);
 				}
 			}
+		}
+
+		private string? GetActualFullNameForFile(string existingFullNameOfFile)
+		{
+			var i = 0;
+			var extension = Path.GetExtension(existingFullNameOfFile);
+			var FullFilNameWithoutExtention = extension.Remove(existingFullNameOfFile.Length - 1 - extension.Length );
+			string? newFullName;
+			do
+			{
+				var newFullName = existingFullNameOfFile.Concat($"+({i})").ToString();
+				i++;
+			} while (System.IO.File.Exists(existingFullNameOfFile));
+
+			return newFullName;
 		}
 	}
 }
