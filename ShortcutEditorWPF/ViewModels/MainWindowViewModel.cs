@@ -164,8 +164,12 @@ namespace ShortcutEditorWPF.ViewModels
 		{
 			if (string.IsNullOrEmpty(_searchingString) || string.IsNullOrEmpty(_newPartOfString)) return;
 			ReplaceFieldsInShortcut(CurrentShortCut.InternalShortcut, 0, _searchingString, _newPartOfString);
-			var fullFileNameForNewShortCut = GetActualFullNameForFile(CurrentShortCut.Path);
-			CurrentShortCut.InternalShortcut.WriteToFile(fullFileNameForNewShortCut);
+			if (SelectedFile?.FullName != null)
+			{
+				var fullFileNameForNewShortCut = GetActualFullNameForFile(SelectedFile.FullName);
+				CurrentShortCut.InternalShortcut.WriteToFile(fullFileNameForNewShortCut);
+			}
+
 			Files = SearchFiles(_currentDirectory, new string [] {".lnk"});
 			Console.WriteLine("D O N E");
 		}
@@ -264,7 +268,7 @@ namespace ShortcutEditorWPF.ViewModels
 						var newValueString = propValue.ToString()?.Replace(searchingString, newPartOfString);
 						p.SetValue(obj, newValueString);
 						Console.WriteLine("GOCHHA!");
-						Thread.Sleep(3000);
+						Thread.Sleep(1600);
 					}
 				}
 					
@@ -279,7 +283,7 @@ namespace ShortcutEditorWPF.ViewModels
 				{
 					Console.WriteLine($"Отступ: {indentString}, Название свойства: {p.Name}, Значение: {p.GetValue(obj)}");
 					Console.WriteLine($"PropValue to string: {propValue}, propValue type: {propValue.GetType()}");
-					Thread.Sleep(200);
+					Thread.Sleep(150);
 					if (propValue.GetType() != typeof(ShellLink.Shortcut))
 						ReplaceFieldsInShortcut(propValue, indent + 2, searchingString, newPartOfString);
 				}
@@ -288,16 +292,16 @@ namespace ShortcutEditorWPF.ViewModels
 
 		private string? GetActualFullNameForFile(string existingFullNameOfFile)
 		{
-			var i = 0;
 			var extension = Path.GetExtension(existingFullNameOfFile);
-			var FullFilNameWithoutExtention = extension.Remove(existingFullNameOfFile.Length - 1 - extension.Length );
-			string? newFullName;
-			do
+			var FullFilNameWithoutExtention = existingFullNameOfFile.Remove(existingFullNameOfFile.Length - 2 - extension.Length);
+			var newFullName = string.Empty;
+			while (true)
 			{
-				var newFullName = existingFullNameOfFile.Concat($"+({i})").ToString();
-				i++;
-			} while (System.IO.File.Exists(existingFullNameOfFile));
-
+				int i = 1;
+				newFullName = FullFilNameWithoutExtention + "-(" + i++ + ")" + extension;
+				if(!System.IO.File.Exists(newFullName))
+					break;
+			} 
 			return newFullName;
 		}
 	}
