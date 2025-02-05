@@ -81,7 +81,14 @@
                     </b:EventTrigger>
                 </b:Interaction.Triggers>
                 <ListBox ItemsSource="{Binding Files}" DisplayMemberPath="ShortName"
-                         SelectedItem="{Binding SelectedFile, Mode=TwoWay}"></ListBox>
+                         SelectedItem="{Binding SelectedFile, Mode=TwoWay}">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem
+                                Header="Открыть папку" Command="{Binding OpenDirectoryWithCurrentShortcutCommand}" />
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
                 
             </GroupBox>
         </DockPanel>

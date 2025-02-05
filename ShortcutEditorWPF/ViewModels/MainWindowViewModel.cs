@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -131,6 +132,18 @@ namespace ShortcutEditorWPF.ViewModels
 		}
 		#endregion
 		
+		#region OpenDirectoryWithCurrentShortcutCommand
+		public ICommand OpenDirectoryWithCurrentShortcutCommand { get; }
+		private bool CanOpenDirectoryWithCurrentShortcutExecute(object p) => true;
+
+		private void OnOpenDirectoryWithCurrentShortcutExecuted(object p)
+		{
+			if (SelectedFile != null)
+					Process.Start("explorer.exe", Path.GetDirectoryName(SelectedFile.FullName) ?? string.Empty);
+			Console.WriteLine("Directory of selected file is NULL");
+		}
+		#endregion
+		
 		#region ClearListCommand
 		public ICommand ClearListCommand { get; }
 		private bool CanClearListExecute(object p) => true;
@@ -187,6 +200,9 @@ namespace ShortcutEditorWPF.ViewModels
 			#region Commands
 			OpenDirectoryCommand =
 				new LambdaCommand(OnOpenDirectoryExecuted, CanOpenDirectoryCommandExecute);
+			
+			OpenDirectoryWithCurrentShortcutCommand =
+				new LambdaCommand(OnOpenDirectoryWithCurrentShortcutExecuted, CanOpenDirectoryWithCurrentShortcutExecute);
 			
 			ClearListCommand =
 				new LambdaCommand(OnClearListExecuted, CanClearListExecute);
@@ -293,7 +309,7 @@ namespace ShortcutEditorWPF.ViewModels
 		private string? GetActualFullNameForFile(string existingFullNameOfFile)
 		{
 			var extension = Path.GetExtension(existingFullNameOfFile);
-			var FullFilNameWithoutExtention = existingFullNameOfFile.Remove(existingFullNameOfFile.Length - 2 - extension.Length);
+			var FullFilNameWithoutExtention = existingFullNameOfFile.Remove(existingFullNameOfFile.Length - extension.Length);
 			var newFullName = string.Empty;
 			while (true)
 			{
