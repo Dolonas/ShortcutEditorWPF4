@@ -43,8 +43,8 @@ public class ShortcutNative
             return "Nun";
         }
     }
-    public string NetName => InternalShortcut.LinkInfo?.CommonNetworkRelativeLink.NetName ?? "Nun";
-    public string DeviceName => InternalShortcut.LinkInfo?.CommonNetworkRelativeLink.DeviceName ?? "Nun";
+    public string NetName => InternalShortcut.LinkInfo?.CommonNetworkRelativeLink?.NetName ?? "Nun";
+    public string DeviceName => InternalShortcut.LinkInfo?.CommonNetworkRelativeLink?.DeviceName ?? "Nun";
 
     public string CreationTime
     {

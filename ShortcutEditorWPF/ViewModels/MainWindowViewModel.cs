@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using Serilog;
 using System.Windows.Input;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using ShellLink;
@@ -28,6 +29,8 @@ namespace ShortcutEditorWPF.ViewModels
 		private string? _shortCutData;
 		private string? _searchingString;
 		private string? _newPartOfString;
+		internal ILogger _logger;
+		
 		public ObservableCollection<File>? Files 
 		{
 			get => _fileList ?? null;
@@ -140,7 +143,7 @@ namespace ShortcutEditorWPF.ViewModels
 		{
 			if (SelectedFile != null)
 					Process.Start("explorer.exe", Path.GetDirectoryName(SelectedFile.FullName) ?? string.Empty);
-			Console.WriteLine("Directory of selected file is NULL");
+			_logger.Warning("Directory of selected file is NULL");
 		}
 		#endregion
 		
@@ -184,7 +187,7 @@ namespace ShortcutEditorWPF.ViewModels
 			}
 
 			Files = SearchFiles(_currentDirectory, new string [] {".lnk"});
-			Console.WriteLine("D O N E");
+			_logger.Information("D O N E !!!");
 		}
 		#endregion
 		
@@ -192,6 +195,12 @@ namespace ShortcutEditorWPF.ViewModels
 		
 		public MainWindowViewModel()
 		{
+			_logger = new LoggerConfiguration()  
+				.MinimumLevel.Debug()  
+				.WriteTo.Console()  
+				.WriteTo.File("logs\\Log_ShortcutEditor.log", rollingInterval: RollingInterval.Day)  
+				.CreateLogger();
+			WriteEnvironmentVariablesToLog();
 			CurrentShortCut = new ShortcutNative(new Shortcut());
 			_currentDirectory = GetStartDirectory();
 			ShortCutData = string.Empty;
@@ -260,7 +269,7 @@ namespace ShortcutEditorWPF.ViewModels
 			if (obj is null) return;
 			var thisType = obj.GetType();
 			var indentString = new string(' ', indent);
-			Console.WriteLine(thisType);
+			_logger.Information(thisType.ToString());
 			var props = thisType.GetProperties();
 			foreach (var p in props)
 			{
@@ -268,37 +277,36 @@ namespace ShortcutEditorWPF.ViewModels
 				if (!p.CanRead || !p.CanWrite)
 				{
 					Console.ForegroundColor = ConsoleColor.Red;
-					Console.Write("!!!");
+					_logger.Information("!!!");
 				}
-				Console.WriteLine($"Prop name: {p.Name}, can write: {p.CanWrite}");
+				_logger.Information($"Prop name: {p.Name}, can write: {p.CanWrite}");
 				object? propValue = null;
-				Console.ForegroundColor = conColorDefault;
 				if (p.PropertyType == typeof(char))
 					return;
 				propValue = p.GetValue(obj, null);
 				if(p.PropertyType == typeof(string) && propValue is not null)
 				{
-					Console.WriteLine($"Отступ: {indentString}, Название свойства: {p.Name}, Значение: {propValue}");
+					_logger.Information($"Отступ: {indent}, Название свойства: {p.Name}, Значение: {propValue}");
 					if(propValue.ToString()!.Contains(searchingString))
 					{
 						var newValueString = propValue.ToString()?.Replace(searchingString, newPartOfString);
 						p.SetValue(obj, newValueString);
-						Console.WriteLine("GOCHHA!");
+						_logger.Information("GOCHHA!");
 						Thread.Sleep(1600);
 					}
 				}
 					
 				else if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType) && p.PropertyType != typeof(string))
 				{
-					Console.WriteLine("{0}{1}:", indentString, p.Name);
+					_logger.Information("{0}{1}:", indentString, p.Name);
 					var enumerable = (IEnumerable)propValue!;
 					foreach(object child in enumerable)
 						ReplaceFieldsInShortcut(child, indent + 2, searchingString, newPartOfString);
 				}
 				else if (propValue != null && !p.PropertyType.IsValueType && propValue.GetType().GetProperties().Length > 0)
 				{
-					Console.WriteLine($"Отступ: {indentString}, Название свойства: {p.Name}, Значение: {p.GetValue(obj)}");
-					Console.WriteLine($"PropValue to string: {propValue}, propValue type: {propValue.GetType()}");
+					_logger.Information($"Отступ: {indent}, Название свойства: {p.Name}, Значение: {p.GetValue(obj)}");
+					_logger.Information($"PropValue to string: {propValue}, propValue type: {propValue.GetType()}");
 					Thread.Sleep(150);
 					if (propValue.GetType() != typeof(ShellLink.Shortcut))
 						ReplaceFieldsInShortcut(propValue, indent + 2, searchingString, newPartOfString);
@@ -319,6 +327,17 @@ namespace ShortcutEditorWPF.ViewModels
 					break;
 			} 
 			return newFullName;
+		}
+		
+		private void WriteEnvironmentVariablesToLog()
+		{
+			_logger.Information($"MachineName: {Environment.MachineName}");
+			_logger.Information($"OS version: {Environment.OSVersion}");
+			var drives = Environment.GetLogicalDrives();
+			_logger.Information($"Logical drives: {String.Join(", ", drives)}");
+			_logger.Information($"UserDomainName: {Environment.UserDomainName}");
+		
+			_logger.Information($"UserName: {Environment.UserName}");
 		}
 	}
 }
