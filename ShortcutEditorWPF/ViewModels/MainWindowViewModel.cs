@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Serilog;
 using System.Windows.Input;
@@ -289,10 +290,10 @@ namespace ShortcutEditorWPF.ViewModels
 					_logger.Information($"Отступ: {indent}, Название свойства: {p.Name}, Значение: {propValue}");
 					if(propValue.ToString()!.Contains(searchingString))
 					{
-						var newValueString = propValue.ToString()?.Replace(searchingString, newPartOfString);
+						var newValueString = propValue.ToString()?.Replace(searchingString, newPartOfString, StringComparison.InvariantCultureIgnoreCase);
 						p.SetValue(obj, newValueString);
 						_logger.Information("GOCHHA!");
-						Thread.Sleep(1600);
+						Thread.Sleep(100);
 					}
 				}
 					
@@ -307,7 +308,7 @@ namespace ShortcutEditorWPF.ViewModels
 				{
 					_logger.Information($"Отступ: {indent}, Название свойства: {p.Name}, Значение: {p.GetValue(obj)}");
 					_logger.Information($"PropValue to string: {propValue}, propValue type: {propValue.GetType()}");
-					Thread.Sleep(150);
+					Thread.Sleep(10);
 					if (propValue.GetType() != typeof(ShellLink.Shortcut))
 						ReplaceFieldsInShortcut(propValue, indent + 2, searchingString, newPartOfString);
 				}
