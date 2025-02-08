@@ -165,11 +165,9 @@ namespace ShortcutEditorWPF.ViewModels
 
 		private void OnOpenSelectedShortCutExecuted(object p)
 		{
-			if (_fileList is { Count: > 0 } && SelectedFile != null)
-			{
-				CurrentShortCut = new ShortcutNative(Shortcut.ReadFromFile(SelectedFile.FullName));
-				ShortCutData = CurrentShortCut.InternalShortcut.ToString();
-			}
+			if (_fileList is not { Count: > 0 } || SelectedFile == null) return;
+			CurrentShortCut = new ShortcutNative(Shortcut.ReadFromFile(SelectedFile.FullName));
+			ShortCutData = CurrentShortCut.InternalShortcut.ToString();
 		}
 		#endregion
 		
@@ -274,35 +272,30 @@ namespace ShortcutEditorWPF.ViewModels
 			var props = thisType.GetProperties();
 			foreach (var p in props)
 			{
-				var conColorDefault = Console.ForegroundColor;
 				if (!p.CanRead || !p.CanWrite)
 				{
-					Console.ForegroundColor = ConsoleColor.Red;
-					_logger.Information("!!!");
+					_logger.Information($"Поле {p} ТОЛЬКО для чтения!!!");
+					continue;
 				}
 				_logger.Information($"Prop name: {p.Name}, can write: {p.CanWrite}");
-				object? propValue = null;
 				if (p.PropertyType == typeof(char))
 					return;
-				propValue = p.GetValue(obj, null);
+				var propValue = p.GetValue(obj, null);
 				if(p.PropertyType == typeof(string) && propValue is not null)
 				{
-					_logger.Information($"Отступ: {indent}, Название свойства: {p.Name}, Значение: {propValue}");
-					if(propValue.ToString()!.Contains(searchingString))
-					{
-						var newValueString = propValue.ToString()?.Replace(searchingString, newPartOfString, StringComparison.InvariantCultureIgnoreCase);
-						p.SetValue(obj, newValueString);
-						_logger.Information("GOCHHA!");
-						Thread.Sleep(100);
-					}
+					_logger.Information($"Глубина: {indent}, Название свойства: {p.Name}, Значение: {propValue}");
+					if (!propValue.ToString()!.ToLower().Contains(searchingString.ToLower())) continue;
+					var newValueString = propValue.ToString()?.Replace( searchingString, newPartOfString, StringComparison.InvariantCultureIgnoreCase);
+					p.SetValue(obj, newValueString);
+					_logger.Information($"Свойство {p} изменено. Новое значение: {newValueString}");
+					Thread.Sleep(50);
 				}
-					
 				else if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType) && p.PropertyType != typeof(string))
 				{
 					_logger.Information("{0}{1}:", indentString, p.Name);
 					var enumerable = (IEnumerable)propValue!;
 					foreach(object child in enumerable)
-						ReplaceFieldsInShortcut(child, indent + 2, searchingString, newPartOfString);
+						if(!child.GetType().IsValueType) ReplaceFieldsInShortcut(child, indent + 2, searchingString, newPartOfString);
 				}
 				else if (propValue != null && !p.PropertyType.IsValueType && propValue.GetType().GetProperties().Length > 0)
 				{
@@ -318,15 +311,19 @@ namespace ShortcutEditorWPF.ViewModels
 		private string? GetActualFullNameForFile(string existingFullNameOfFile)
 		{
 			var extension = Path.GetExtension(existingFullNameOfFile);
-			var FullFilNameWithoutExtention = existingFullNameOfFile.Remove(existingFullNameOfFile.Length - extension.Length);
-			var newFullName = string.Empty;
-			while (true)
+			var FullFileNameWithoutExtension = existingFullNameOfFile.Remove(existingFullNameOfFile.Length - extension.Length);
+			var newFullName = FullFileNameWithoutExtension + "-(" + 1 + ")" + extension;
+			if(!System.IO.File.Exists(newFullName))
+				return newFullName;
+			var regex = new Regex(@"(?<=\()[0-9]{1,5}(?=\)$)");
+			var match = regex.Match(FullFileNameWithoutExtension);
+			if (int.TryParse(match.Value, out var i))
+				newFullName = FullFileNameWithoutExtension + "-(" + ++i + ")" + extension;
+			else
 			{
-				int i = 1;
-				newFullName = FullFilNameWithoutExtention + "-(" + i++ + ")" + extension;
-				if(!System.IO.File.Exists(newFullName))
-					break;
-			} 
+				_logger.Error($"Невозможно преобразовать строку {match.Value}, полученную из FullFileNameWithoutExtension {FullFileNameWithoutExtension}, в int (операция Regex)");
+				throw new ArgumentException($"Невозможно преобразовать строку {match.Value} в int(операция Regex)");
+			}
 			return newFullName;
 		}
 		
@@ -340,5 +337,6 @@ namespace ShortcutEditorWPF.ViewModels
 		
 			_logger.Information($"UserName: {Environment.UserName}");
 		}
+		
 	}
 }
