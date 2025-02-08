@@ -315,16 +315,21 @@ namespace ShortcutEditorWPF.ViewModels
 			var newFullName = FullFileNameWithoutExtension + "-(" + 1 + ")" + extension;
 			if(!System.IO.File.Exists(newFullName))
 				return newFullName;
-			var regex = new Regex(@"(?<=\()[0-9]{1,5}(?=\)$)");
-			var match = regex.Match(FullFileNameWithoutExtension);
-			if (int.TryParse(match.Value, out var i))
-				newFullName = FullFileNameWithoutExtension + "-(" + ++i + ")" + extension;
-			else
+			var regex = new Regex(@"(?<=\()[0-9]{1,5}(?=\).*$)");
+			while (true)
 			{
-				_logger.Error($"Невозможно преобразовать строку {match.Value}, полученную из FullFileNameWithoutExtension {FullFileNameWithoutExtension}, в int (операция Regex)");
+				_logger.Information($"Новое имя файла: {newFullName}");
+				var match = regex.Match(newFullName.Remove(existingFullNameOfFile.Length - extension.Length));
+				_logger.Information($"Совпадения: {match.Value}");
+				if (match.Value.Length > 0 && int.TryParse(match.Value, out var i))
+				{
+					return FullFileNameWithoutExtension.Replace($"({i})", $"({++i})");
+				}
+
+				_logger.Error(
+					$"Невозможно преобразовать строку {match.Value}, полученную из FullFileNameWithoutExtension {FullFileNameWithoutExtension}, в int (операция Regex)");
 				throw new ArgumentException($"Невозможно преобразовать строку {match.Value} в int(операция Regex)");
 			}
-			return newFullName;
 		}
 		
 		private void WriteEnvironmentVariablesToLog()
