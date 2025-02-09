@@ -312,24 +312,35 @@ namespace ShortcutEditorWPF.ViewModels
 		{
 			var extension = Path.GetExtension(existingFullNameOfFile);
 			var FullFileNameWithoutExtension = existingFullNameOfFile.Remove(existingFullNameOfFile.Length - extension.Length);
-			var newFullName = FullFileNameWithoutExtension + "-(" + 1 + ")" + extension;
-			if(!System.IO.File.Exists(newFullName))
+			var newFullName = FullFileNameWithoutExtension + "-(" + 1 + ")";
+			if(!System.IO.File.Exists(newFullName + extension))
 				return newFullName;
 			var regex = new Regex(@"(?<=\()[0-9]{1,5}(?=\)$.*)");
-			while (true)
+			var attemptNum = 1;
+			_logger.Information($"Новое имя файла: {newFullName}");
+			var match = regex.Match(newFullName);
+			_logger.Information($"Совпадения: {match.Value}");
+			if (match.Value.Length > 0 && int.TryParse(match.Value, out attemptNum))
 			{
-				_logger.Information($"Новое имя файла: {newFullName}");
-				var match = regex.Match(newFullName);
-				_logger.Information($"Совпадения: {match.Value}");
-				if (match.Value.Length > 0 && int.TryParse(match.Value, out var i))
-				{
-					return FullFileNameWithoutExtension.Replace($"({i})", $"({++i})");
-				}
-
+				newFullName = newFullName.Replace($"({attemptNum})", $"({++attemptNum})") + extension;
+				if (!System.IO.File.Exists(newFullName + extension)) return new string("${newFullNameForRecord}  + {extension}");
+			}
+			else
+			{
 				_logger.Error(
 					$"Невозможно преобразовать строку {match.Value}, полученную из FullFileNameWithoutExtension {FullFileNameWithoutExtension}, в int (операция Regex)");
 				throw new ArgumentException($"Невозможно преобразовать строку {match.Value} в int(операция Regex)");
 			}
+			while (System.IO.File.Exists(newFullName + extension) && attemptNum < 50 )
+			{
+				_logger.Information($"Новое имя файла: {newFullName}");
+				_logger.Information($"Совпадения: {match.Value}");
+				newFullName = newFullName.Replace($"({attemptNum})", $"({++attemptNum})") + extension;
+				if (!System.IO.File.Exists(newFullName + extension)) return new string("${newFullNameForRecord}  + {extension}");
+			}
+			_logger.Error(
+				$"Невозможно преобразовать строку {match.Value}, полученную из FullFileNameWithoutExtension {FullFileNameWithoutExtension}, в int (операция Regex)");
+			throw new ArgumentException($"Невозможно преобразовать строку {match.Value} в int(операция Regex)");
 		}
 		
 		private void WriteEnvironmentVariablesToLog()
