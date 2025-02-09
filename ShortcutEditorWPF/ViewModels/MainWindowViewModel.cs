@@ -315,11 +315,11 @@ namespace ShortcutEditorWPF.ViewModels
 			var newFullName = FullFileNameWithoutExtension + "-(" + 1 + ")" + extension;
 			if(!System.IO.File.Exists(newFullName))
 				return newFullName;
-			var regex = new Regex(@"(?<=\()[0-9]{1,5}(?=\).*$)");
+			var regex = new Regex(@"(?<=\()[0-9]{1,5}(?=\)$.*)");
 			while (true)
 			{
 				_logger.Information($"Новое имя файла: {newFullName}");
-				var match = regex.Match(newFullName.Remove(existingFullNameOfFile.Length - extension.Length));
+				var match = regex.Match(newFullName);
 				_logger.Information($"Совпадения: {match.Value}");
 				if (match.Value.Length > 0 && int.TryParse(match.Value, out var i))
 				{
